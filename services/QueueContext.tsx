@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext } from 'react';
-import { Colors } from '../theme/colors';
 
 const QueueContext = createContext();
 
@@ -26,14 +25,15 @@ export const QueueProvider = ({ children }) => {
     const peopleAhead = Math.floor(Math.random() * 15) + 1;
     const estimatedTime = peopleAhead * service.waitTime;
     
-    setCurrentQueue({
+    const updatedQueue = {
       currentNumber: service.currentNumber,
       yourNumber: newNumber,
       peopleAhead,
       estimatedTime,
       service: service.name
-    });
+    };
     
+    setCurrentQueue(updatedQueue);
     return { number: newNumber, estimatedTime };
   };
 
@@ -44,4 +44,10 @@ export const QueueProvider = ({ children }) => {
   );
 };
 
-export const useQueue = () => useContext(QueueContext);
+export const useQueue = () => {
+  const context = useContext(QueueContext);
+  if (!context) {
+    throw new Error('useQueue must be used within a QueueProvider');
+  }
+  return context;
+};

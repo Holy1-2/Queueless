@@ -1,50 +1,49 @@
-# Welcome to your Expo app 👋
+# QueueLess - Smart Waiting System
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 🚀 Problem Solved
+Solves the daily frustration of waiting in long queues at banks, hospitals, and government offices.
 
-## Get started
+## 🎯 Key Features
+- ✅ Digital Queue Numbers
+- ✅ Real-time Queue Updates
+- ✅ Wait Time Predictions
+- ✅ Smart Notifications
+- ✅ Remote Waiting
+- ✅ Admin Management Panel
+- ✅ Multi-location Support
 
-1. Install dependencies
+## 🏆 Why It Can Win
+1. **Real Problem**: Everyone experiences queue frustration
+2. **Easy Demo**: Live demonstration with visible results
+3. **Scalable**: Works for any service industry
+4. **Business Value**: Reduces physical infrastructure costs
+5. **User Experience**: Modern, intuitive interface
 
-   ```bash
-   npm install
-   ```
+## 🧠 Technology Stack
+- **Frontend**: React Native (Expo)
+- **Backend**: Firebase (Firestore, Auth, Cloud Messaging)
+- **Styling**: Custom Modern Black Theme with Blue Accents
+- **Navigation**: React Navigation 6
+- **Notifications**: Expo Notifications
 
-2. Start the app
+## 📱 Screens
+1. **Home**: Service selection with stats
+2. **Queue**: Real-time queue management
+3. **Notifications**: Alert management
+4. **Admin**: Staff control panel
+5. **Profile**: User account & history
 
-   ```bash
-   npx expo start
-   ```
+## 🎤 Presentation Tips
+1. Start with relatable queue frustration stories
+2. Demo the complete user flow live
+3. Show admin panel for business perspective
+4. Highlight time saved statistics
+5. Mention QR code integration for physical locations
+6. Discuss scalability to other industries
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+## 🚀 Quick Start
 ```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+npx create-expo-app QueueLess --template
+cd QueueLess
+npm install
+expo start

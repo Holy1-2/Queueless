@@ -1,150 +1,144 @@
 import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { Colors } from '../theme/colors';
+import { HomeIcon, QueueIcon, HistoryIcon, ProfileIcon } from '../components/Icons';
 import HomeScreen from '../screens/HomeScreen';
 import QueueScreen from '../screens/QueueScreen';
-import NotificationScreen from '../screens/NotificationScreen';
-import AdminScreen from '../screens/AdminScreen';
+import HistoryScreen from '../screens/HistoryScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import { Colors } from '../theme/colors';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Stack Navigator for Queue Flow
-const QueueStack = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerStyle: {
-        backgroundColor: Colors.background,
-        elevation: 0,
-        shadowOpacity: 0,
-      },
-      headerTintColor: Colors.text,
-      headerTitleStyle: {
-        fontWeight: '600',
-      },
-      cardStyle: {
-        backgroundColor: Colors.background,
-      },
-    }}
-  >
-    <Stack.Screen 
-      name="Home" 
-      component={HomeScreen}
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen 
-      name="Queue" 
-      component={QueueScreen}
-      options={{ 
-        headerShown: false,
-        gestureEnabled: true 
-      }}
-    />
-    <Stack.Screen 
-      name="Notifications" 
-      component={NotificationScreen}
-      options={{
-        title: 'Notifications',
-        headerBackTitle: 'Back',
-      }}
-    />
-  </Stack.Navigator>
-);
+function TabBarIcon({ focused, iconName }: { focused: boolean; iconName: string }) {
+  const IconComponent = {
+    Home: HomeIcon,
+    Queue: QueueIcon,
+    History: HistoryIcon,
+    Profile: ProfileIcon,
+  }[iconName];
 
-// Main Tab Navigator
-const MainTabNavigator = () => (
-  <Tab.Navigator
-    screenOptions={({ route }) => ({
-      tabBarIcon: ({ focused, color, size }) => {
-        let iconName;
-        
-        switch (route.name) {
-          case 'Home':
-            iconName = focused ? 'home' : 'home-outline';
-            break;
-          case 'Notifications':
-            iconName = focused ? 'notifications' : 'notifications-outline';
-            break;
-          case 'Admin':
-            iconName = focused ? 'settings' : 'settings-outline';
-            break;
-          case 'Profile':
-            iconName = focused ? 'person' : 'person-outline';
-            break;
-        }
-        
-        return <Ionicons name={iconName} size={size} color={color} />;
-      },
-      tabBarActiveTintColor: Colors.primary,
-      tabBarInactiveTintColor: Colors.textSecondary,
-      tabBarStyle: {
-        backgroundColor: Colors.surface,
-        borderTopColor: Colors.border,
-        borderTopWidth: 1,
-        paddingBottom: 5,
-        paddingTop: 5,
-        height: 60,
-      },
-      tabBarLabelStyle: {
-        fontSize: 12,
-        fontWeight: '500',
-        marginBottom: 4,
-      },
-      headerShown: false,
-    })}
-  >
-    <Tab.Screen 
-      name="Home" 
-      component={QueueStack}
-      options={{ 
-        title: 'Services',
-        unmountOnBlur: true 
-      }}
-    />
-    <Tab.Screen 
-      name="Notifications" 
-      component={NotificationScreen}
-      options={{ 
-        title: 'Alerts',
-        tabBarBadge: 3 // Demo badge
-      }}
-    />
-    <Tab.Screen 
-      name="Admin" 
-      component={AdminScreen}
-      options={{ 
-        title: 'Manage' 
-      }}
-    />
-    <Tab.Screen 
-      name="Profile" 
-      component={ProfileScreen}
-      options={{ 
-        title: 'Profile' 
-      }}
-    />
-  </Tab.Navigator>
-);
+  return <IconComponent color={focused ? Colors.primary : Colors.textSecondary} />;
+}
 
-// Root Navigator
-const RootStack = createStackNavigator();
-
-const AppNavigator = () => {
+function CustomTabBar({ state, descriptors, navigation }: any) {
   return (
-    <RootStack.Navigator
+    <View style={styles.tabBar}>
+      {state.routes.map((route: any, index: number) => {
+        const { options } = descriptors[route.key];
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        return (
+          <TouchableOpacity
+            key={route.key}
+            accessibilityRole="button"
+            accessibilityState={isFocused ? { selected: true } : {}}
+            accessibilityLabel={options.tabBarAccessibilityLabel}
+            testID={options.tabBarTestID}
+            onPress={onPress}
+            style={styles.tabButton}
+          >
+            <TabBarIcon focused={isFocused} iconName={route.name} />
+            <Text style={[
+              styles.tabLabel,
+              { color: isFocused ? Colors.primary : Colors.textSecondary }
+            ]}>
+              {route.name}
+            </Text>
+            {isFocused && <View style={styles.activeIndicator} />}
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        cardStyle: {
-          backgroundColor: Colors.background,
-        },
       }}
     >
-      <RootStack.Screen name="MainTabs" component={MainTabNavigator} />
-    </RootStack.Navigator>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Queue" component={QueueScreen} />
+      <Tab.Screen name="History" component={HistoryScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
   );
-};
+}
 
-export default AppNavigator;
+export default function AppNavigator() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: Colors.background,
+            elevation: 0,
+            shadowOpacity: 0,
+          },
+          headerTintColor: Colors.text,
+          cardStyle: {
+            backgroundColor: Colors.background,
+          },
+        }}
+      >
+        <Stack.Screen
+          name="MainTabs"
+          component={MainTabs}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: Colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    paddingBottom: 8,
+    paddingTop: 12,
+  },
+  tabButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  tabLabel: {
+    fontSize: 11,
+    marginTop: 4,
+    fontWeight: '500',
+  },
+  activeIndicator: {
+    position: 'absolute',
+    top: 0,
+    width: 4,
+    height: 3,
+    backgroundColor: Colors.primary,
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
+  },
+});

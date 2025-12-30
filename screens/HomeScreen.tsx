@@ -1,76 +1,82 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useQueue } from '../services/QueueContext';
-import { Colors } from '../theme/colors';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
+import Carousel from '../components/Carousel';
+import GlassCard from '../components/GlassCard';
+import { Colors, Spacing, Typography } from '../theme/colors';
+import {
+  NotificationIcon,
+  DoctorIcon,CalendarIcon,
+  EmergencyIcon,
+  PharmacyIcon,
+  LabIcon,
+  LocationIcon,
+} from '../components/Icons';
 
-const HomeScreen = ({ navigation }) => {
-  const { services } = useQueue();
+interface HomeScreenProps {
+  navigation: any;
+}
 
-  const ServiceCard = ({ service }) => {
-    const iconMap = {
-      bank: 'business',
-      hospital: 'medkit',
-      building: 'business',
-      mail: 'mail'
-    };
+const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
-    return (
-      <TouchableOpacity
-        style={styles.serviceCard}
-        onPress={() => navigation.navigate('Queue', { service })}
-      >
-        <View style={styles.cardHeader}>
-          <Ionicons name={iconMap[service.icon]} size={32} color={Colors.primary} />
-          <View style={styles.waitTimeBadge}>
-            <Text style={styles.waitTimeText}>{service.waitTime} min avg</Text>
-          </View>
-        </View>
-        
-        <Text style={styles.serviceName}>{service.name}</Text>
-        <Text style={styles.currentNumber}>Now serving: {service.currentNumber}</Text>
-        
-        <View style={styles.cardFooter}>
-          <Text style={styles.availableText}>Available</Text>
-          <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
-        </View>
-      </TouchableOpacity>
-    );
+
+
+  const recentVisits = [
+    { id: '1', service: 'Cardiology', doctor: 'Dr. Smith', date: 'Today, 10:30 AM' },
+    { id: '2', service: 'Dental', doctor: 'Dr. Johnson', date: 'Yesterday' },
+    { id: '3', service: 'General Checkup', doctor: 'Dr. Williams', date: 'Dec 12' },
+  ];
+
+  const handleServicePress = (service: any) => {
+    navigation.navigate('Queue', { service });
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>QueueLess</Text>
-        <Text style={styles.subtitle}>Smart Waiting System</Text>
+        <View>
+          <Text style={styles.greeting}>Welcome back,</Text>
+          <Text style={styles.userName}>Alex Morgan</Text>
+        </View>
+        <TouchableOpacity style={styles.notificationButton}>
+          <NotificationIcon />
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <Ionicons name="time-outline" size={24} color={Colors.primary} />
-          <Text style={styles.statNumber}>24.5k+</Text>
-          <Text style={styles.statLabel}>Hours Saved</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Ionicons name="people-outline" size={24} color={Colors.primary} />
-          <Text style={styles.statNumber}>18.2k+</Text>
-          <Text style={styles.statLabel}>Users Served</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Ionicons name="business-outline" size={24} color={Colors.primary} />
-          <Text style={styles.statNumber}>245+</Text>
-          <Text style={styles.statLabel}>Partners</Text>
-        </View>
-      </View>
+      {/* Services Grid */}
+      <Text style={styles.sectionTitle}>Hospital Services</Text>
+   
 
-      <Text style={styles.sectionTitle}>Available Services</Text>
-      <FlatList
-        data={services}
-        renderItem={({ item }) => <ServiceCard service={item} />}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-      />
-    </View>
+      {/* Carousel */}
+      <Carousel onItemPress={handleServicePress} />
+
+      {/* Quick Actions */}
+      
+      {/* Recent Visits */}
+      <Text style={styles.sectionTitle}>Recent Visits</Text>
+      {recentVisits.map((visit) => (
+        <GlassCard key={visit.id} style={styles.visitCard}>
+          <View style={styles.visitContent}>
+            <View style={styles.visitIcon}>
+              <DoctorIcon />
+            </View>
+            <View style={styles.visitInfo}>
+              <Text style={styles.visitService}>{visit.service}</Text>
+              <Text style={styles.visitDoctor}>{visit.doctor}</Text>
+            </View>
+            <View style={styles.visitDate}>
+              <Text style={styles.dateText}>{visit.date}</Text>
+            </View>
+          </View>
+        </GlassCard>
+      ))}
+    </ScrollView>
   );
 };
 
@@ -78,99 +84,130 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-    padding: 20,
   },
   header: {
-    marginTop: 20,
-    marginBottom: 30,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: Colors.text,
-    letterSpacing: 1,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-    marginTop: 4,
-  },
-  statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: Colors.surface,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 30,
-  },
-  statItem: {
     alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xxl,
+    paddingBottom: Spacing.lg,
   },
-  statNumber: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.text,
-    marginTop: 8,
-  },
-  statLabel: {
-    fontSize: 12,
+  greeting: {
+    ...Typography.body,
     color: Colors.textSecondary,
-    marginTop: 4,
   },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: '600',
+  userName: {
+    ...Typography.h2,
     color: Colors.text,
-    marginBottom: 16,
+    marginTop: 2,
   },
-  serviceCard: {
+  notificationButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: Colors.surface,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  waitTimeBadge: {
-    backgroundColor: Colors.primary + '20',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  waitTimeText: {
-    color: Colors.primary,
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  serviceName: {
-    fontSize: 18,
-    fontWeight: '600',
+  sectionTitle: {
+    ...Typography.h3,
     color: Colors.text,
-    marginBottom: 8,
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.md,
+    marginTop: Spacing.lg,
   },
-  currentNumber: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    marginBottom: 15,
-  },
-  cardFooter: {
+  servicesGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    paddingTop: 15,
+    flexWrap: 'wrap',
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
   },
-  availableText: {
-    color: Colors.success,
-    fontSize: 14,
+  serviceCard: {
+    width: '48%',
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
+    padding: Spacing.md,
+    marginRight: '4%',
+    marginBottom: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'center',
+  },
+  serviceIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.sm,
+  },
+  serviceTitle: {
+    ...Typography.body,
+    color: Colors.text,
     fontWeight: '600',
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
+  },
+  actionCard: {
+    width: '48%',
+    marginRight: '4%',
+    marginBottom: Spacing.md,
+    padding: Spacing.md,
+    alignItems: 'center',
+  },
+  actionIconContainer: {
+    marginBottom: Spacing.sm,
+  },
+  actionTitle: {
+    ...Typography.caption,
+    color: Colors.text,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  visitCard: {
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.md,
+  },
+  visitContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.md,
+  },
+  visitIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.primary + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  visitInfo: {
+    flex: 1,
+  },
+  visitService: {
+    ...Typography.body,
+    color: Colors.text,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  visitDoctor: {
+    ...Typography.caption,
+    color: Colors.textSecondary,
+  },
+  visitDate: {
+    alignItems: 'flex-end',
+  },
+  dateText: {
+    ...Typography.small,
+    color: Colors.textSecondary,
   },
 });
 
